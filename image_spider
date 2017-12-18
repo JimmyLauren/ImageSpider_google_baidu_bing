@@ -1,0 +1,63 @@
+# -*- coding:utf-8 -*-
+"""
+a image spider that can download images form internet using keywords
+input:
+    1. engine: one of the follows:
+        "Baidu" "Google" "Bing" "Flickr" "Greedy"
+    2. keywords: keywords for downloading iamges
+    3. parser_threads
+    4. downloader_threads
+    5. save_image_folder: folder that saves images downloaded from internet
+"""
+from icrawler.builtin import BaiduImageCrawler, BingImageCrawler, GoogleImageCrawler,FlickrImageCrawler
+class image_spider(object):
+    def __init__(self,keywords,engine="Google",parser_threads=4,
+                 downloader_threads=8,save_image_folder='your_image_folder',max_num=None):
+        self.engine = engine
+        self.keywords=keywords
+        self.parser_threads=parser_threads
+        self.downloader_threads=downloader_threads
+        self.saving_image_folder=save_image_folder
+        self.max_num=max_num
+
+    def __call__(self, *args, **kwargs):
+        assert self.engine in ['Google','Baidu','Bing']
+        if self.engine=='Google':
+            google_crawler=GoogleImageCrawler(parser_threads=self.parser_threads,downloader_threads=self.downloader_threads,
+                                              storage={'root_dir':self.saving_image_folder})
+            google_crawler.crawl(keyword=self.keywords,offset=0,max_num=self.max_num,
+                                 date_min=None, date_max=None,
+                                 min_size=None, max_size=None)
+        elif self.engine=='Baidu':
+            baidu_crawler=BaiduImageCrawler(storage={'root_dir':self.saving_image_folder})
+            baidu_crawler.crawl(keyword=self.keywords,offset=0,max_num=self.max_num,
+                                min_size=None,max_size=None)
+        elif self.engine=='Bing':
+            bing_crawler=BingImageCrawler(storage={'root_dir':self.saving_image_folder})
+            bing_crawler.crawl(keyword=self.keywords,offset=0,max_num=self.max_num,
+                               min_size=None,max_size=None)
+
+if __name__=='__main__':
+    engine=input("Please input search engine (must be one of {'Google','Baidu','Bing'}): ")
+    assert engine in ['Google', 'Baidu', 'Bing']
+    if engine=='Google':
+        parser_threads=int(input("Please input parser_threads: "))
+        downloader_threads=int(input("Please input downloader_threads: "))
+        saving_image_folder=input("Please input saving_image_folder: ")
+        keywords=input("Please input keywords: ")
+        max_num=int(input("Please input numbers of maxinum images that will be downloaded: "))
+        spider=image_spider(keywords=keywords,engine=engine,parser_threads=parser_threads,
+                     downloader_threads=downloader_threads,save_image_folder=saving_image_folder,
+                     max_num=max_num)
+    elif engine=='Baidu':
+        saving_image_folder = input("Please input saving_image_folder: ")
+        keywords = input("Please input keywords: ")
+        max_num=int(input("Please input numbers of maxinum images that will be downloaded: "))
+        spider =image_spider(keywords,engine=engine,save_image_folder=saving_image_folder,max_num=max_num)
+    elif engine=='Bing':
+        saving_image_folder = input("Please input saving_image_folder: ")
+        keywords = input("Please input keywords: ")
+        max_num=int(input("Please input numbers of maxinum images that will be downloaded: "))
+        spider =image_spider(keywords=keywords,engine=engine,save_image_folder=saving_image_folder,max_num=max_num)
+    spider()
+    print('Images downloaded Done!!')
